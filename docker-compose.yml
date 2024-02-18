@@ -1,0 +1,68 @@
+services:
+
+  nextcloud:
+    image: lscr.io/linuxserver/nextcloud:latest
+    container_name: nextcloud
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+    volumes:
+      - ${HOMELAB_PATH}/nextcloud/config:/config
+      - ${HOMELAB_PATH}/nextcloud/data:/data
+    ports:
+      - 443:443
+    restart: unless-stopped
+
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex
+    network_mode: host
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - VERSION=docker
+      - PLEX_CLAIM= #optional
+    volumes:
+      - ${HOMELAB_PATH}/plex/library:/config
+      - ${HOMELAB_PATH}/plex/tvseries:/tv
+      - ${HOMELAB_PATH}/plex/movies:/movies
+    restart: unless-stopped
+
+  transmission:
+    image: lscr.io/linuxserver/transmission:latest
+    container_name: transmission
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - TRANSMISSION_WEB_HOME= #optional
+      - USER= #optional
+      - PASS= #optional
+      - WHITELIST= #optional
+      - PEERPORT= #optional
+      - HOST_WHITELIST= #optional
+    volumes:
+      - ${HOMELAB_PATH}/transmission/data:/config
+      - ${HOMELAB_PATH}/transmission/downloads:/downloads
+      - ${HOMELAB_PATH}/transmission/folder:/watch
+    ports:
+      - 9091:9091
+      - 51413:51413
+      - 51413:51413/udp
+    restart: unless-stopped
+
+  mc:
+    image: itzg/minecraft-server
+    container_name: mc
+    environment:
+      EULA: "true"
+      VERSION: 1.20.2
+    ports:
+      - "25565:25565"
+    volumes:
+      - ${HOMELAB_PATH}/mc/data:/data
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
